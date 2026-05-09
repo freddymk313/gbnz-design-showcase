@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, Plus } from "lucide-react";
 import { GbnzLogo } from "./Logo";
 
 type Cat = "Tout" | "Logos" | "Affiches" | "Identité Visuelle";
@@ -20,38 +20,48 @@ export function Portfolio() {
   const filtered = projects.filter((p) => active === "Tout" || p.cat === active);
 
   return (
-    <section id="portfolio" className="py-24 bg-brand-soft">
+    <section id="portfolio" className="py-32 bg-[#F8F8F8]">
       <div className="max-w-7xl mx-auto px-6">
+        
+        {/* Header - Aligné avec ton style Services */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-16"
         >
-          <h2 className="font-display text-5xl md:text-7xl text-brand-black">Nos Réalisations</h2>
-          <p className="mt-3 text-brand-gray text-lg">Une sélection de nos projets récents</p>
+          <h2 className="font-display text-6xl md:text-8xl text-brand-black leading-none uppercase tracking-tighter">
+            Nos <span className="text-brand-yellow">Réalisations</span>
+          </h2>
+          <p className="mt-6 text-brand-gray text-xl font-body max-w-xl mx-auto italic">
+            "Le design est l'ambassadeur silencieux de votre marque."
+          </p>
         </motion.div>
 
-        <div className="flex flex-wrap justify-center gap-2 mb-12">
+        {/* Filtres de Catégories */}
+        <div className="flex flex-wrap justify-center gap-4 mb-16">
           {cats.map((c) => (
             <button
               key={c}
               onClick={() => setActive(c)}
-              className="relative px-5 py-2 text-sm font-medium rounded-full"
+              className="relative px-8 py-3 text-xs font-bold uppercase tracking-widest transition-colors"
             >
               {active === c && (
                 <motion.span
-                  layoutId="tab-active"
-                  className="absolute inset-0 bg-brand-black rounded-full"
+                  layoutId="portfolio-tab"
+                  className="absolute inset-0 bg-brand-yellow rounded-full"
                   transition={{ type: "spring", stiffness: 300, damping: 30 }}
                 />
               )}
-              <span className={`relative z-10 ${active === c ? "text-white" : "text-brand-black"}`}>{c}</span>
+              <span className={`relative z-10 transition-colors duration-300 ${active === c ? "text-brand-black" : "text-brand-gray hover:text-brand-black"}`}>
+                {c}
+              </span>
             </button>
           ))}
         </div>
 
-        <div className="columns-1 md:columns-2 lg:columns-3 gap-6 space-y-6">
+        {/* Masonry Grid */}
+        <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
           <AnimatePresence mode="popLayout">
             {filtered.map((p, i) => (
               <motion.div
@@ -60,43 +70,57 @@ export function Portfolio() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
                 exit={{ opacity: 0, scale: 0.9 }}
-                transition={{ delay: i * 0.05, duration: 0.4 }}
-                whileHover="hover"
-                className={`group relative break-inside-avoid rounded-2xl overflow-hidden ${p.bg} ${p.aspect} cursor-pointer shadow-md`}
+                transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+                className={`group relative break-inside-avoid rounded-[32px] overflow-hidden ${p.bg} ${p.aspect} cursor-pointer border border-black/5 shadow-sm hover:shadow-2xl transition-all duration-500`}
               >
+                {/* Logo Gbnz spécifique pour la carte de présentation */}
                 {p.showLogo && (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <GbnzLogo />
+                  <div className="absolute inset-0 flex items-center justify-center p-12">
+                    <GbnzLogo className="w-full h-auto opacity-80 group-hover:scale-110 transition-transform duration-700" />
                   </div>
                 )}
+
+                {/* Overlay au Hover */}
                 <motion.div
-                  variants={{ hover: { scale: 1.03 } }}
-                  className="absolute inset-0"
-                />
-                <motion.div
-                  variants={{ hover: { opacity: 1 } }}
-                  initial={{ opacity: 0 }}
-                  className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center text-white p-6"
+                  className="absolute inset-0 bg-brand-black/60 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-10"
                 >
-                  <p className="font-display text-2xl">{p.title}</p>
-                  <p className="text-sm text-white/70 mt-1">{p.label}</p>
-                  <span className="mt-4 inline-flex items-center gap-1 text-brand-yellow font-semibold">
-                    Voir le projet <ArrowRight size={16} />
-                  </span>
+                  <motion.div
+                    initial={{ y: 20, opacity: 0 }}
+                    whileHover={{ y: 0, opacity: 1 }}
+                    transition={{ duration: 0.4 }}
+                  >
+                    <span className="text-brand-yellow text-[10px] font-bold uppercase tracking-[0.3em] mb-2 block">
+                      {p.cat}
+                    </span>
+                    <h3 className="text-white font-display text-4xl mb-2 uppercase tracking-tight">
+                      {p.title}
+                    </h3>
+                    <p className="text-white/60 text-sm font-body mb-6">
+                      {p.label}
+                    </p>
+                    <div className="flex items-center gap-2 text-white font-bold text-xs uppercase tracking-tighter">
+                      <span>Découvrir</span>
+                      <div className="w-8 h-8 rounded-full bg-brand-yellow flex items-center justify-center text-brand-black">
+                        <Plus size={16} />
+                      </div>
+                    </div>
+                  </motion.div>
                 </motion.div>
               </motion.div>
             ))}
           </AnimatePresence>
         </div>
 
-        <div className="text-center mt-12">
+        {/* Call to Action Final */}
+        <div className="text-center mt-20">
           <motion.a
             href="#contact"
             whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.97 }}
-            className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-brand-black text-white font-semibold"
+            whileTap={{ scale: 0.98 }}
+            className="group inline-flex items-center gap-4 px-10 py-5 rounded-full bg-brand-black text-white font-bold uppercase text-xs tracking-widest shadow-xl hover:shadow-brand-yellow/10 transition-all"
           >
-            Voir tout le portfolio <ArrowRight size={18} />
+            Démarrer un projet avec nous
+            <ArrowRight size={18} className="text-brand-yellow group-hover:translate-x-1 transition-transform" />
           </motion.a>
         </div>
       </div>
