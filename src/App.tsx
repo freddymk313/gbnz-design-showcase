@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { Navbar } from "@/components/gbnz/Navbar";
 import { Hero } from "@/components/gbnz/Hero";
 import { Marquee } from "@/components/gbnz/Marquee";
@@ -8,19 +8,7 @@ import { About } from "@/components/gbnz/About";
 import { Contact } from "@/components/gbnz/Contact";
 import { Footer } from "@/components/gbnz/Footer";
 
-export const Route = createFileRoute("/")({
-  head: () => ({
-    meta: [
-      { title: "Gbnz Design | Studio Créatif à Kinshasa" },
-      { name: "description", content: "Studio créatif à Kinshasa, RDC. Logos, affiches et identité visuelle sur mesure pour entreprises ambitieuses." },
-      { property: "og:title", content: "Gbnz Design | Studio Créatif à Kinshasa" },
-      { property: "og:description", content: "Logos, affiches et branding premium par Gbnz Design — Kinshasa, RDC." },
-    ],
-  }),
-  component: Index,
-});
-
-function Index() {
+function HomePage() {
   return (
     <main className="bg-white text-brand-black overflow-x-hidden">
       <Navbar />
@@ -32,5 +20,16 @@ function Index() {
       <Contact />
       <Footer />
     </main>
+  );
+}
+
+export default function App() {
+  return (
+    <BrowserRouter>
+      <Routes>
+        <Route path="/" element={<HomePage />} />
+        <Route path="*" element={<HomePage />} />
+      </Routes>
+    </BrowserRouter>
   );
 }
