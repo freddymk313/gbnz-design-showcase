@@ -77,7 +77,7 @@ export function Contact() {
                 <div className="w-10 h-10 rounded-xl bg-white/5 flex items-center justify-center text-brand-yellow">
                   <MapPin size={18} />
                 </div>
-                Kinshasa & Lubumbashi, RDC
+                Lubumbashi, RDC
               </div>
             </div>
           </div>
@@ -87,7 +87,7 @@ export function Contact() {
             <p className="text-[10px] font-bold uppercase tracking-widest text-white/40 mb-4 font-body">Suivez le studio</p>
             <div className="flex gap-3">
               {[
-                { Icon: MessageCircle, href: "https://wa.me/243976925615", label: "WhatsApp" },
+                // { Icon: MessageCircle, href: "https://wa.me/243976925615", label: "WhatsApp" },
                 { Icon: Instagram, href: "#", label: "Instagram" },
                 { Icon: Facebook, href: "#", label: "Facebook" },
               ].map(({ Icon, href, label }) => (
@@ -95,7 +95,7 @@ export function Contact() {
                   key={label} 
                   href={href} 
                   aria-label={label} 
-                  className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center text-white/80 hover:bg-brand-yellow hover:text-brand-black hover:border-brand-yellow hover:scale-105 transition-all duration-300"
+                  className="w-12 h-12 rounded-full *border border-white/10 flex items-center justify-center text-white/80 hover:bg-brand-yellow hover:text-brand-black hover:border-brand-yellow hover:scale-105 transition-all duration-300"
                 >
                   <Icon size={18} />
                 </a>
@@ -192,7 +192,7 @@ export function Contact() {
                   type="submit"
                   whileHover={{ scale: 1.01, backgroundColor: "#E2B500" }}
                   whileTap={{ scale: 0.99 }}
-                  className="w-full py-4 rounded-2xl bg-brand-yellow text-brand-black font-bold uppercase text-xs tracking-widest flex items-center justify-center gap-2 shadow-xl shadow-brand-yellow/10 mt-6 transition-colors duration-300"
+                  className="w-full py-5 rounded-full bg-brand-yellow text-brand-black font-bold uppercase text-xs tracking-widest flex items-center justify-center gap-2 *shadow-xl *shadow-brand-yellow/10 mt-6 transition-colors duration-300"
                 >
                   Envoyer le brief du projet <ArrowRight size={14} />
                 </motion.button>

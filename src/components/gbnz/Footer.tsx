@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
-import { GbnzLogo } from "./Logo";
+// import { GbnzLogo } from "./Logo";
+import GbnzLogo from "../../assets/logo-test.png";
 import { ArrowRight, Sparkles } from "lucide-react";
 
 export function Footer() {
@@ -13,7 +14,16 @@ export function Footer() {
           {/* LOGO & DESCRIPTION (5 Colonnes) */}
           <div className="lg:col-span-5 space-y-6">
             {/* Suppression de "inverted" pour que le logo s'affiche correctement sur fond blanc */}
-            <GbnzLogo className="w-24 h-auto" />
+            {/* <GbnzLogo className="w-24 h-auto" /> */}
+            <a href="#accueil" className="relative z-50 flex items-center group">
+          <motion.img 
+            src={GbnzLogo} 
+            alt="GBNZ Logo" 
+            // animate={{ height: scrolled ? 56 : 58 }}
+            className="w-auto object-contain transition-all -ml-2 h-28 duration-500"
+          />
+        </a>
+
             <p className="text-brand-gray text-lg font-body leading-relaxed max-w-sm">
               Gbnz Design · Créer. Inspirer. Marquer.
               <br />

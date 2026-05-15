@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
-import GbnzLogo from "../../assets/gbnz-logo.jpeg";
+import GbnzLogo from "../../assets/logo-test.png";
 
 const links = [
   { label: "Accueil", href: "#accueil" },
@@ -39,7 +39,7 @@ export function Navbar() {
           <motion.img 
             src={GbnzLogo} 
             alt="GBNZ Logo" 
-            animate={{ height: scrolled ? 50 : 56 }}
+            animate={{ height: scrolled ? 60 : 65 }}
             className="w-auto object-contain transition-all duration-500 group-hover:scale-105"
           />
         </a>
