@@ -24,7 +24,25 @@ export function Contact() {
   });
 
   const onSubmit = (data: FormData) => {
-    console.log("Form submission:", data);
+    // 1. Construire le message WhatsApp formaté
+    const message = `*Nouveau Brief Projet - Gbnz Design*%0A` +
+                    `---------------------------------%0A` +
+                    `*Client :* ${data.prenom} ${data.nom}%0A` +
+                    `*Email :* ${data.email}%0A` +
+                    `*WhatsApp :* ${data.whatsapp}%0A%0A` +
+                    `*Service :* ${data.service}%0A` +
+                    `*Budget :* ${data.budget}%0A` +
+                    `*Date souhaitée :* ${data.date}%0A%0A` +
+                    `*Description :*%0A${encodeURIComponent(data.description)}`;
+
+    // 2. Créer l'URL WhatsApp avec le numéro de Gloire
+    const whatsappUrl = `https://wa.me/243976925615?text=${message}`;
+
+    // 3. Ouvrir l'URL dans un nouvel onglet
+    window.open(whatsappUrl, '_blank');
+
+    // 4. Mettre à jour l'état de l'interface
+    console.log("Form submission (sent to WhatsApp):", data);
     setSent(true);
     reset();
     setTimeout(() => setSent(false), 5000);
@@ -129,9 +147,9 @@ export function Contact() {
                 >
                   <Check size={44} className="text-brand-black" strokeWidth={3} />
                 </motion.div>
-                <h3 className="font-display text-4xl mt-8 uppercase tracking-tight">Message Reçu !</h3>
+                <h3 className="font-display text-4xl mt-8 uppercase tracking-tight">Message Transmis !</h3>
                 <p className="text-brand-gray mt-3 font-body max-w-xs text-base">
-                  Merci pour votre confiance. Notre équipe analyse votre brief et revient vers vous sous 24h.
+                  Merci pour votre confiance. Votre brief est en cours d'envoi via WhatsApp. Nous reviendrons vers vous sous 24h.
                 </p>
               </motion.div>
             ) : (
@@ -190,11 +208,12 @@ export function Contact() {
 
                 <motion.button
                   type="submit"
-                  whileHover={{ scale: 1.01, backgroundColor: "#E2B500" }}
-                  whileTap={{ scale: 0.99 }}
-                  className="w-full py-5 rounded-full bg-brand-yellow text-brand-black font-bold uppercase text-xs tracking-widest flex items-center justify-center gap-2 *shadow-xl *shadow-brand-yellow/10 mt-6 transition-colors duration-300"
+                  whileHover={{ scale: 1.05, backgroundColor: "#0D0D0D", color: "#FFFFFF" }}
+                  whileTap={{ scale: 0.98 }}
+                  // Style mis à jour pour correspondre au bouton "Prendre RDV" de la navbar
+                  className="w-full inline-flex items-center gap-2 px-7 py-4 rounded-full bg-brand-yellow text-brand-black text-sm font-bold uppercase tracking-tighter transition-all justify-center mt-6 *shadow-[0_4px_14px_0_rgba(245,196,0,0.39)] hover:shadow-brand-yellow/10 duration-300"
                 >
-                  Envoyer le brief du projet <ArrowRight size={14} />
+                  Envoyer via WhatsApp <ArrowRight size={14} />
                 </motion.button>
               </motion.form>
             )}

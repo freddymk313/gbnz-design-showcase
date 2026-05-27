@@ -1,6 +1,7 @@
+import posterImage from "@/assets/poster.jpg";
+
 import { motion, useScroll, useTransform, useSpring, useMotionValue, cubicBezier } from "framer-motion";
 import { ArrowRight, ArrowDown } from "lucide-react";
-import { GbnzLogo } from "./Logo"; // Assure-toi que ce composant gère la prop 'inverted'
 
 const container = {
   hidden: {},
@@ -60,13 +61,8 @@ export function Hero() {
           className="lg:col-span-7"
         >
           <motion.div variants={item} 
-          // className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-brand-yellow/10 border border-brand-yellow/20 text-brand-yellow text-[11px] font-bold tracking-[0.2em] uppercase"
           className="inline-block px-4 py-1.5 rounded-full bg-brand-yellow text-brand-black text-xs font-semibold tracking-wide uppercase"
           >
-            {/* <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-yellow opacity-75"></span>
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-yellow"></span>
-            </span> */}
             Studio Créatif · Lubumbashi, RDC
           </motion.div>
 
@@ -82,14 +78,14 @@ export function Hero() {
             Gbnz Design transforme vos idées en identités visuelles percutantes. Nous créons des marques qui dominent le marché de Kinshasa et d'ailleurs.
           </motion.p>
 
-          <motion.div variants={item} className="mt-10 flex flex-wrap gap-5">
+          {/* <motion.div variants={item} className="mt-10 flex flex-wrap gap-5">
             <motion.a
               href="#contact"
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.98 }}
               className="inline-flex items-center gap-3 px-8 py-5 rounded-full bg-brand-black text-white font-bold uppercase text-xs tracking-widest shadow-2xl shadow-black/20 transition-all"
             >
-              Démarrer un projet <ArrowRight size={18} className="*text-brand-yellow text-white" />
+              Démarrer un projet <ArrowRight size={18} className="text-white" />
             </motion.a>
             
             <motion.a
@@ -100,7 +96,29 @@ export function Hero() {
             >
               Voir nos créations
             </motion.a>
-          </motion.div>
+          </motion.div> */}
+
+          <motion.div variants={item} className="mt-10 flex flex-wrap gap-5">
+  {/* Bouton Principal - Démarrer un projet */}
+  <motion.a
+    href="#contact"
+    whileHover={{ scale: 1.03, y: -2 }}
+    whileTap={{ scale: 0.98 }}
+    className="inline-flex items-center gap-3 px-8 py-4 rounded-full bg-brand-black text-white text-sm font-bold uppercase tracking-tighter shadow-2xl shadow-black/20 transition-all"
+  >
+    Démarrer un projet <ArrowRight size={18} className="text-white" />
+  </motion.a>
+  
+  {/* Bouton Secondaire - Voir nos créations */}
+  <motion.a
+    href="#portfolio"
+    whileHover={{ scale: 1.03, backgroundColor: "#f3f4f6" }}
+    whileTap={{ scale: 0.98 }}
+    className="inline-flex items-center gap-3 px-8 py-4 rounded-full border-2 border-brand-black text-brand-black text-sm font-bold uppercase tracking-tighter transition-all"
+  >
+    Voir nos créations
+  </motion.a>
+</motion.div>
 
           {/* SOCIAL PROOF */}
           <motion.div variants={item} className="mt-12 pt-10 border-t border-black/5 flex items-center gap-8">
@@ -111,21 +129,21 @@ export function Hero() {
             </div>
             <div className="text-sm font-medium text-brand-gray">
               <span className="text-brand-black font-bold">+50 clients</span> nous font confiance <br/>
-              à Kinshasa & International
+              à Lubumbashi & International
             </div>
           </motion.div>
         </motion.div>
 
         {/* VISUAL CARDS SECTION */}
-        <div className="lg:col-span-5 relative h-[500px] hidden lg:flex items-center justify-center">
+        <div className="lg:col-span-5 relative h-[600px] hidden lg:flex items-center justify-center">
           <motion.div 
             style={{ x: springX, y: springY }}
             className="relative w-full h-full"
           >
             {[
-              { rotate: -12, x: -30, y: 0, bg: "bg-brand-yellow", delay: 0.4, label: "Logo Design" },
-              { rotate: 6, x: 50, y: -40, bg: "bg-brand-black", delay: 0.6, label: "Branding" },
-              { rotate: -2, x: 10, y: 60, bg: "bg-white border border-black/10", delay: 0.8, label: "Affiches" },
+              { rotate: -12, x: -30, y: 0, delay: 0.4, label: "Logo Design" },
+              { rotate: 6, x: 50, y: -40, delay: 0.6, label: "Branding" },
+              { rotate: -2, x: 10, y: 60, delay: 0.8, label: "Affiches" },
             ].map((c, i) => (
               <motion.div
                 key={i}
@@ -133,18 +151,38 @@ export function Hero() {
                 animate={{ opacity: 1, scale: 1, rotate: c.rotate, x: c.x, y: c.y }}
                 transition={{ delay: c.delay, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
                 whileHover={{ y: c.y - 20, scale: 1.05, transition: { duration: 0.3 } }}
-                className={`absolute inset-0 m-auto w-64 h-80 rounded-[24px] shadow-[0_30px_60px_-15px_rgba(0,0,0,0.3)] ${c.bg} p-6 flex flex-col justify-between overflow-hidden group`}
+                // Modifié: w-72 h-96 (plus gros), shadow supprimé, border ajouté pour la clarté si bg blanc
+                className="absolute inset-0 m-auto w-72 h-96 rounded-[24px] border border-black/5 p-6 flex flex-col justify-between overflow-hidden group bg-white"
                 style={{ zIndex: 3 - i }}
               >
-                <div className="flex justify-between items-start">
-                    <GbnzLogo inverted={i === 1} className="w-12" />
-                    <span className={`text-[10px] font-bold uppercase tracking-widest ${i === 1 ? 'text-white/50' : 'text-black/50'}`}>
+                {/* 1. L'image importée en tâche de fond de la carte */}
+                <img 
+                  src={posterImage} 
+                  alt={c.label} 
+                  className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out z-0"
+                />
+
+                {/* 2. Overlay clair et discret pour garder le texte lisible */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10 z-10" />
+
+                {/* 3. Contenu (Forcé en blanc et z-20 pour passer devant l'image) */}
+                <div className="relative z-20 flex justify-between items-start">
+                    {/* <GbnzLogo inverted={true} className="w-12" /> */}
+                    {/* Modifié: text-black pour la clarté */}
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/90">
                         {c.label}
                     </span>
                 </div>
-                {/* Decorative element inside card */}
-                <div className={`w-full h-32 rounded-xl ${i === 1 ? 'bg-white/10' : 'bg-black/5'} mt-4`} />
-                <div className={`h-2 w-12 rounded-full ${i === 1 ? 'bg-brand-yellow' : 'bg-brand-black'}`} />
+
+                {/* Petit spacer pour pousser le footer de la carte vers le bas */}
+                <div className="relative z-20 flex-grow" />
+
+                <div className="relative z-20 flex items-center justify-between mt-4">
+                  {/* Modifié: bg-brand-black pour la clarté */}
+                  <div className="h-1.5 w-12 rounded-full bg-brand-yellow" />
+                  {/* Modifié: text-black pour la clarté */}
+                  <span className="text-[9px] text-white/70 uppercase font-mono tracking-wider">Gbnz Studio</span>
+                </div>
               </motion.div>
             ))}
           </motion.div>

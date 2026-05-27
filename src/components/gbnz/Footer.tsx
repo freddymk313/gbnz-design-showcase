@@ -15,7 +15,7 @@ export function Footer() {
           <div className="lg:col-span-5 space-y-6">
             {/* Suppression de "inverted" pour que le logo s'affiche correctement sur fond blanc */}
             {/* <GbnzLogo className="w-24 h-auto" /> */}
-            <a href="#accueil" className="relative z-50 flex items-center group">
+            <a href="#accueil" className="relative *z-50 flex items-center group">
           <motion.img 
             src={GbnzLogo} 
             alt="GBNZ Logo" 

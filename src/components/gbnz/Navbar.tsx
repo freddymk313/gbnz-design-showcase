@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence, useScroll, useMotionValueEvent } from "framer-motion";
 import { Menu, X, ArrowRight } from "lucide-react";
 import GbnzLogo from "../../assets/logo-test.png";
@@ -35,7 +35,7 @@ export function Navbar() {
       <div className="max-w-7xl mx-auto px-6 flex items-center justify-between">
         
         {/* LOGO AREA */}
-        <a href="#accueil" className="relative z-50 flex items-center group">
+        <a href="#accueil" className="relative *z-50 flex items-center group">
           <motion.img 
             src={GbnzLogo} 
             alt="GBNZ Logo" 
@@ -52,7 +52,8 @@ export function Navbar() {
               href={link.href}
               onMouseEnter={() => setHoveredLink(link.label)}
               onMouseLeave={() => setHoveredLink(null)}
-              className="relative text-[13px] font-bold uppercase tracking-widest text-brand-black transition-colors duration-300 py-2"
+              // MODIFIÉ ICI: Styles CSS du texte du lien pour correspondre au texte du bouton
+              className="relative text-sm font-bold uppercase tracking-tighter text-brand-black transition-colors duration-300 py-2"
             >
               {link.label}
               {/* Animated Underline */}
@@ -75,7 +76,7 @@ export function Navbar() {
             href="#contact"
             whileHover={{ scale: 1.05, backgroundColor: "#0D0D0D", color: "#FFFFFF" }}
             whileTap={{ scale: 0.98 }}
-            className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-brand-yellow text-brand-black font-bold text-xs uppercase tracking-tighter transition-all *shadow-[0_4px_14px_0_rgba(245,196,0,0.39)]"
+            className="inline-flex items-center gap-2 px-7 py-4 rounded-full bg-brand-yellow text-brand-black font-bold text-sm uppercase tracking-tighter transition-all *shadow-[0_4px_14px_0_rgba(245,196,0,0.39)]"
           >
             Prendre RDV
             <ArrowRight size={14} />
