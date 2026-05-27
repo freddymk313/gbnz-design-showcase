@@ -88,7 +88,7 @@ export function Portfolio() {
             <button
               key={c}
               onClick={() => setActive(c)}
-              className="relative px-8 py-3 text-xs font-bold uppercase tracking-widest transition-colors"
+              className="relative px-5 md:px-6 py-2 text-brand-black text-xs font-bold uppercase tracking-tighter transition-colors"
             >
               {active === c && (
                 <motion.span
@@ -166,7 +166,7 @@ export function Portfolio() {
             href="#contact"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.98 }}
-            className="group inline-flex items-center gap-4 px-10 py-5 rounded-full bg-brand-black text-white text-sm font-bold uppercase tracking-tighter shadow-xl hover:shadow-brand-yellow/10 transition-all"
+            className="group inline-flex items-center gap-4 px-8 md:px-10 py-5 rounded-full bg-brand-black text-white text-sm font-bold uppercase tracking-tighter shadow-xl hover:shadow-brand-yellow/10 transition-all"
           >
             Démarrer un projet avec nous
             <ArrowRight size={18} className="text-brand-yellow group-hover:translate-x-1 transition-transform" />
