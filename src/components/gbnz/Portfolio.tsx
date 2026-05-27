@@ -1,18 +1,62 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowRight, Plus } from "lucide-react";
-import { GbnzLogo } from "./Logo";
+// import { GbnzLogo } from "./Logo";
+import posterImage from "@/assets/poster.jpg"; // Ajustez le chemin relatif selon où se trouve ce composant
 
 type Cat = "Tout" | "Logos" | "Affiches" | "Identité Visuelle";
 const cats: Cat[] = ["Tout", "Logos", "Affiches", "Identité Visuelle"];
 
 const projects = [
-  { title: "Gbnz Design", label: "Logo — Studio Créatif", cat: "Logos", bg: "bg-brand-black", aspect: "aspect-square", showLogo: true },
-  { title: "Festival Lumière", label: "Affiche — Événement 2024", cat: "Affiches", bg: "bg-brand-yellow", aspect: "aspect-[3/4]" },
-  { title: "Maison Kivu", label: "Identité — Restaurant", cat: "Identité Visuelle", bg: "bg-neutral-200", aspect: "aspect-square" },
-  { title: "Tech Congo", label: "Logo — Startup", cat: "Logos", bg: "bg-brand-black", aspect: "aspect-[4/3]" },
-  { title: "Mode Kin", label: "Affiche — Défilé", cat: "Affiches", bg: "bg-brand-yellow", aspect: "aspect-square" },
-  { title: "Banque Élite", label: "Identité — Charte", cat: "Identité Visuelle", bg: "bg-neutral-200", aspect: "aspect-[3/4]" },
+  { 
+    title: "Gbnz Design", 
+    label: "Logo — Studio Créatif", 
+    cat: "Logos", 
+    bg: "bg-brand-black", 
+    aspect: "aspect-square", 
+    showLogo: true,
+    image: posterImage
+  },
+  { 
+    title: "Festival Lumière", 
+    label: "Affiche — Événement 2024", 
+    cat: "Affiches", 
+    bg: "bg-brand-yellow", 
+    aspect: "aspect-[3/4]",
+    image: posterImage
+  },
+  { 
+    title: "Maison Kivu", 
+    label: "Identité — Restaurant", 
+    cat: "Identité Visuelle", 
+    bg: "bg-neutral-200", 
+    aspect: "aspect-square",
+    image: posterImage
+  },
+  { 
+    title: "Tech Congo", 
+    label: "Logo — Startup", 
+    cat: "Logos", 
+    bg: "bg-brand-black", 
+    aspect: "aspect-[4/3]",
+    image: posterImage
+  },
+  { 
+    title: "Mode Kin", 
+    label: "Affiche — Défilé", 
+    cat: "Affiches", 
+    bg: "bg-brand-yellow", 
+    aspect: "aspect-square",
+    image: posterImage
+  },
+  { 
+    title: "Banque Élite", 
+    label: "Identité — Charte", 
+    cat: "Identité Visuelle", 
+    bg: "bg-neutral-200", 
+    aspect: "aspect-[3/4]",
+    image: posterImage
+  },
 ];
 
 export function Portfolio() {
@@ -63,7 +107,7 @@ export function Portfolio() {
         {/* Masonry Grid */}
         <div className="columns-1 md:columns-2 lg:columns-3 gap-8 space-y-8">
           <AnimatePresence mode="popLayout">
-            {filtered.map((p, i) => (
+            {filtered.map((p) => (
               <motion.div
                 key={p.title}
                 layout
@@ -73,22 +117,27 @@ export function Portfolio() {
                 transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
                 className={`group relative break-inside-avoid rounded-[32px] overflow-hidden ${p.bg} ${p.aspect} cursor-pointer border border-black/5 shadow-sm hover:shadow-2xl transition-all duration-500`}
               >
-                {/* Logo Gbnz spécifique pour la carte de présentation */}
-                {p.showLogo && (
-                  <div className="absolute inset-0 flex items-center justify-center p-12">
-                    <GbnzLogo className="w-full h-auto opacity-80 group-hover:scale-110 transition-transform duration-700" />
+                {/* Image de fond du projet */}
+                {p.image && (
+                  <img 
+                    src={p.image} 
+                    alt={p.title}
+                    className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                  />
+                )}
+
+                {/* Logo Gbnz spécifique (si activé et pas d'image, ou superposé) */}
+                {p.showLogo && !p.image && (
+                  <div className="absolute inset-0 flex items-center justify-center p-12 z-10">
+                    {/* <GbnzLogo className="w-full h-auto opacity-80 group-hover:scale-110 transition-transform duration-700" /> */}
                   </div>
                 )}
 
-                {/* Overlay au Hover */}
+                {/* Overlay au Hover - Ajout de z-20 pour passer au dessus de l'image */}
                 <motion.div
-                  className="absolute inset-0 bg-brand-black/60 backdrop-blur-[2px] opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-10"
+                  className="absolute inset-0 bg-brand-black/70 backdrop-blur-[4px] opacity-0 group-hover:opacity-100 transition-all duration-500 flex flex-col justify-end p-10 z-20"
                 >
-                  <motion.div
-                    initial={{ y: 20, opacity: 0 }}
-                    whileHover={{ y: 0, opacity: 1 }}
-                    transition={{ duration: 0.4 }}
-                  >
+                  <div className="transform translate-y-4 group-hover:translate-y-0 transition-transform duration-500 ease-out">
                     <span className="text-brand-yellow text-[10px] font-bold uppercase tracking-[0.3em] mb-2 block">
                       {p.cat}
                     </span>
@@ -104,7 +153,7 @@ export function Portfolio() {
                         <Plus size={16} />
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 </motion.div>
               </motion.div>
             ))}
