@@ -1,0 +1,6 @@
+{
+  "name": "Gbnz Design Showcase",
+  "description": "Showcase and portfolio website for Gbnz Design, a design agency in Lubumbashi, DRC.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
