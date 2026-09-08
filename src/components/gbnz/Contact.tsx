@@ -26,14 +26,14 @@ export function Contact() {
   const onSubmit = (data: FormData) => {
     // 1. Construire le message WhatsApp formaté
     const message = `*Nouveau Brief Projet - Gbnz Design*%0A` +
-                    `---------------------------------%0A` +
-                    `*Client :* ${data.prenom} ${data.nom}%0A` +
-                    `*Email :* ${data.email}%0A` +
-                    `*WhatsApp :* ${data.whatsapp}%0A%0A` +
-                    `*Service :* ${data.service}%0A` +
-                    `*Budget :* ${data.budget}%0A` +
-                    `*Date souhaitée :* ${data.date}%0A%0A` +
-                    `*Description :*%0A${encodeURIComponent(data.description)}`;
+      `---------------------------------%0A` +
+      `*Client :* ${data.prenom} ${data.nom}%0A` +
+      `*Email :* ${data.email}%0A` +
+      `*WhatsApp :* ${data.whatsapp}%0A%0A` +
+      `*Service :* ${data.service}%0A` +
+      `*Budget :* ${data.budget}%0A` +
+      `*Date souhaitée :* ${data.date}%0A%0A` +
+      `*Description :*%0A${encodeURIComponent(data.description)}`;
 
     // 2. Créer l'URL WhatsApp avec le numéro de Gloire
     const whatsappUrl = `https://wa.me/243976925615?text=${message}`;
@@ -54,7 +54,7 @@ export function Contact() {
       <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[350px] sm:w-[500px] h-[350px] sm:h-[500px] bg-brand-yellow/5 rounded-full blur-[100px] md:blur-[120px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-14 lg:gap-16 items-start relative z-10">
-        
+
         {/* LEFT COLUMN: BRAND INFO (5 Columns) */}
         <motion.div
           initial={{ opacity: 0, x: -25 }}
@@ -68,11 +68,11 @@ export function Contact() {
               <span className="w-8 sm:w-10 h-[2px] bg-brand-yellow" />
               <span className="text-brand-yellow font-bold text-[10px] sm:text-xs uppercase tracking-[0.3em]">Briefing</span>
             </div>
-            
+
             <h2 className="font-display text-4xl sm:text-6xl md:text-8xl leading-[0.92] sm:leading-[0.88] md:leading-[0.85] text-white tracking-tighter uppercase">
               Créons <br /> <span className="text-brand-yellow italic">Ensemble.</span>
             </h2>
-            
+
             <p className="mt-4 sm:mt-6 md:mt-8 text-white/60 text-base sm:text-lg font-body leading-relaxed max-w-md">
               Réservez une consultation gratuite. Parlez-nous de vos objectifs et recevez une proposition de design sur mesure sous 24 heures.
             </p>
@@ -108,10 +108,10 @@ export function Contact() {
                 { Icon: Instagram, href: "#", label: "Instagram" },
                 { Icon: Facebook, href: "#", label: "Facebook" },
               ].map(({ Icon, href, label }) => (
-                <a 
-                  key={label} 
-                  href={href} 
-                  aria-label={label} 
+                <a
+                  key={label}
+                  href={href}
+                  aria-label={label}
                   className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border border-white/10 flex items-center justify-center text-white/80 hover:bg-brand-yellow hover:text-brand-black hover:border-brand-yellow hover:scale-105 transition-all duration-300"
                 >
                   <Icon size={16} className="sm:w-4 sm:h-4" />
@@ -166,7 +166,7 @@ export function Contact() {
                     <input {...register("nom")} className="w-full px-3.5 py-3 sm:px-4 sm:py-3.5 bg-[#F9F9F9] border border-black/5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-body outline-none focus:border-brand-yellow/60 focus:bg-white transition-all duration-300" />
                   </Field>
                 </div>
-                
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 sm:gap-5">
                   <Field label="Email professionnel" error={errors.email?.message}>
                     <input type="email" {...register("email")} className="w-full px-3.5 py-3 sm:px-4 sm:py-3.5 bg-[#F9F9F9] border border-black/5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-body outline-none focus:border-brand-yellow/60 focus:bg-white transition-all duration-300" />
@@ -194,10 +194,13 @@ export function Contact() {
                   <Field label="Budget estimé" error={errors.budget?.message}>
                     <select {...register("budget")} className="w-full px-3.5 py-3 sm:px-4 sm:py-3.5 bg-[#F9F9F9] border border-black/5 rounded-xl sm:rounded-2xl text-xs sm:text-sm font-body outline-none focus:border-brand-yellow/60 focus:bg-white transition-all duration-300 cursor-pointer">
                       <option value="">Sélectionner...</option>
-                      <option value="Moins de 100$">Moins de 100$</option>
-                      <option value="100–300$">100$ – 300$</option>
-                      <option value="300–1000$">300$ – 1 000$</option>
-                      <option value="1000$+$">Plus de 1 000$</option>
+                      <option value="25.000 FC">25.000 FC</option>
+                      <option value="35.000 FC">35.000 FC</option>
+                      <option value="45.000 FC">45.000 FC</option>
+                      <option value="50.000 FC">50.000 FC</option>
+                      <option value="55.000 FC">55.000 FC</option>
+                      <option value="65.000 FC">65.000 FC</option>
+                      <option value="Plus de 65.000 FC">Plus de 65.000 FC</option>
                     </select>
                   </Field>
                   <Field label="Date de livraison souhaitée" error={errors.date?.message}>

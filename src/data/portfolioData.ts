@@ -1,5 +1,5 @@
-export type Cat = "Tout" | "Logos" | "Affiches" | "Identité Visuelle";
-export const cats: Cat[] = ["Tout", "Logos", "Affiches", "Identité Visuelle"];
+export type Cat = "Tout" | "Logos" | "Affiches";
+export const cats: Cat[] = ["Tout", "Logos", "Affiches" ];
 
 // Importation dynamique ordonnée des images
 const imagesGlob = import.meta.glob('@/assets/portfolio/*.jpg', { eager: true, import: 'default' });
