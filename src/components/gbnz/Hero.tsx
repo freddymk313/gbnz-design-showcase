@@ -1,10 +1,7 @@
-// 1. Importe les 3 affiches spécifiquement
-import poster4 from "@/assets/portfolio/4.jpg";
-import poster17 from "@/assets/portfolio/17.jpg";
-import poster9 from "@/assets/portfolio/9.jpg";
-
 import { motion, useScroll, useTransform, useSpring, useMotionValue, cubicBezier } from "framer-motion";
 import { ArrowRight, ArrowDown } from "lucide-react";
+import { useHeroPosters, usePosters, useSiteSettings } from "@/hooks/usePortfolio";
+import { getHeroPosterUrl } from "@/lib/sanity/image";
 
 const container = {
   hidden: {},
@@ -21,8 +18,50 @@ const item = {
 };
 
 export function Hero() {
+  const { data: sanityHeroPosters = [], isLoading: isLoadingHero } = useHeroPosters();
+  const { data: allSanityPosters = [], isLoading: isLoadingAll } = usePosters();
+  const { data: settings } = useSiteSettings();
   const { scrollY } = useScroll();
   const blobY = useTransform(scrollY, [0, 600], [0, 150]);
+
+  // Affiches 100% dynamiques issues de Sanity CMS
+  const activeSanityCards =
+    sanityHeroPosters.length > 0
+      ? sanityHeroPosters
+      : allSanityPosters.slice(0, 3);
+
+  // Positionnement dynamique selon le nombre réel d'affiches publiées
+  const getCardLayout = (index: number, total: number) => {
+    if (total === 1) {
+      return { rotate: -2, x: 0, y: 0, delay: 0.4 };
+    }
+    if (total === 2) {
+      return index === 0
+        ? { rotate: -8, x: -35, y: -10, delay: 0.4 }
+        : { rotate: 5, x: 35, y: 20, delay: 0.6 };
+    }
+    const defaultPresets = [
+      { rotate: -12, x: -30, y: 0, delay: 0.4 },
+      { rotate: 6, x: 50, y: -40, delay: 0.6 },
+      { rotate: -2, x: 10, y: 60, delay: 0.8 },
+    ];
+    return defaultPresets[index % defaultPresets.length];
+  };
+
+  const cardsToRender = activeSanityCards.slice(0, 3).map((poster, i) => ({
+    ...getCardLayout(i, Math.min(activeSanityCards.length, 3)),
+    label: poster.title,
+    image: getHeroPosterUrl(poster.image),
+  }));
+
+  const isLoading = (isLoadingHero || isLoadingAll) && cardsToRender.length === 0;
+
+  // Dynamic texts from Sanity siteSettings
+  const locationText = settings?.location || "Studio Créatif · Lubumbashi, RDC";
+  const subtitleText =
+    settings?.heroSubtitle ||
+    "Gbnz Design transforme vos idées en identités visuelles percutantes. Nous créons des marques qui dominent le marché de Kinshasa et d'ailleurs.";
+  const clientCountText = settings?.heroClientCount || "+50 clients";
 
   // Mouse movement for parallax effect
   const mouseX = useMotionValue(0);
@@ -67,7 +106,7 @@ export function Hero() {
             variants={item}
             className="inline-block px-3.5 py-1 sm:px-4 sm:py-1.5 rounded-full bg-brand-yellow text-brand-black text-[11px] sm:text-xs font-semibold tracking-wide uppercase"
           >
-            Studio Créatif · Lubumbashi, RDC
+            {locationText}
           </motion.div>
 
           {/* MAIN TITLE : Balanced for mobile 2-3 lines without overflowing */}
@@ -83,7 +122,7 @@ export function Hero() {
             variants={item}
             className="mt-4 sm:mt-6 md:mt-8 text-base sm:text-lg md:text-xl text-brand-gray max-w-xl leading-relaxed font-body"
           >
-            Gbnz Design transforme vos idées en identités visuelles percutantes. Nous créons des marques qui dominent le marché de Kinshasa et d'ailleurs.
+            {subtitleText}
           </motion.p>
 
           {/* ACTION BUTTONS */}
@@ -124,7 +163,7 @@ export function Hero() {
               ))}
             </div>
             <div className="text-xs sm:text-sm font-medium text-brand-gray leading-tight sm:leading-snug">
-              <span className="text-brand-black font-bold">+50 clients</span> nous font confiance <br />
+              <span className="text-brand-black font-bold">{clientCountText}</span> nous font confiance <br />
               à Lubumbashi & International
             </div>
           </motion.div>
@@ -134,44 +173,44 @@ export function Hero() {
         <div className="lg:col-span-5 relative h-[520px] xl:h-[600px] hidden lg:flex items-center justify-center">
           <motion.div
             style={{ x: springX, y: springY }}
-            className="relative w-full h-full"
+            className="relative w-full h-full flex items-center justify-center"
           >
-            {[
-              { rotate: -12, x: -30, y: 0, delay: 0.4, label: "Affiche 4", image: poster4 },
-              { rotate: 6, x: 50, y: -40, delay: 0.6, label: "Affiche 17", image: poster17 },
-              { rotate: -2, x: 10, y: 60, delay: 0.8, label: "Affiche 9", image: poster9 },
-            ].map((c, i) => (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, scale: 0.8, rotate: 0 }}
-                animate={{ opacity: 1, scale: 1, rotate: c.rotate, x: c.x, y: c.y }}
-                transition={{ delay: c.delay, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
-                whileHover={{ y: c.y - 20, scale: 1.05, zIndex: 10, transition: { duration: 0.3 } }}
-                className="absolute inset-0 m-auto w-72 h-96 rounded-[24px] border border-black/5 p-6 flex flex-col justify-between overflow-hidden group bg-white shadow-xl"
-                style={{ zIndex: 3 - i }}
-              >
-                <img
-                  src={c.image}
-                  alt={c.label}
-                  className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out z-0"
-                />
+            {isLoading ? (
+              <div className="w-72 h-96 rounded-[24px] border border-black/5 bg-black/5 animate-pulse flex items-center justify-center shadow-lg" />
+            ) : cardsToRender.length > 0 ? (
+              cardsToRender.map((c, i) => (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, scale: 0.8, rotate: 0 }}
+                  animate={{ opacity: 1, scale: 1, rotate: c.rotate, x: c.x, y: c.y }}
+                  transition={{ delay: c.delay, duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
+                  whileHover={{ y: c.y - 20, scale: 1.05, zIndex: 10, transition: { duration: 0.3 } }}
+                  className="absolute inset-0 m-auto w-72 h-96 rounded-[24px] border border-black/5 p-6 flex flex-col justify-between overflow-hidden group bg-white shadow-xl"
+                  style={{ zIndex: 3 - i }}
+                >
+                  <img
+                    src={c.image}
+                    alt={c.label}
+                    className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out z-0"
+                  />
 
-                <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10 z-10" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-black/10 z-10" />
 
-                <div className="relative z-20 flex justify-between items-start">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-white/90">
-                    {c.label}
-                  </span>
-                </div>
+                  <div className="relative z-20 flex justify-between items-start">
+                    <span className="text-[10px] font-bold uppercase tracking-widest text-white/90">
+                      {c.label}
+                    </span>
+                  </div>
 
-                <div className="relative z-20 flex-grow" />
+                  <div className="relative z-20 flex-grow" />
 
-                <div className="relative z-20 flex items-center justify-between mt-4">
-                  <div className="h-1.5 w-12 rounded-full bg-brand-yellow" />
-                  <span className="text-[9px] text-white/70 uppercase font-mono tracking-wider">Gbnz Studio</span>
-                </div>
-              </motion.div>
-            ))}
+                  <div className="relative z-20 flex items-center justify-between mt-4">
+                    <div className="h-1.5 w-12 rounded-full bg-brand-yellow" />
+                    <span className="text-[9px] text-white/70 uppercase font-mono tracking-wider">Gbnz Studio</span>
+                  </div>
+                </motion.div>
+              ))
+            ) : null}
           </motion.div>
         </div>
       </div>

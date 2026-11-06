@@ -2,24 +2,42 @@ import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Link } from "react-router-dom";
 import { ArrowLeft, ArrowRight, Sparkles, MessageCircle, SlidersHorizontal, ChevronLeft } from "lucide-react";
+
+/** Skeleton masonry affiché pendant le chargement Sanity */
+function PortfolioPageSkeleton() {
+  return (
+    <div className="columns-1 sm:columns-2 lg:columns-3 gap-5 sm:gap-6 md:gap-8 space-y-5 sm:space-y-6 md:space-y-8">
+      {[280, 360, 300, 420, 260, 340, 310, 390, 270].map((h, i) => (
+        <div
+          key={i}
+          className="break-inside-avoid rounded-2xl sm:rounded-3xl md:rounded-[32px] bg-black/5 animate-pulse"
+          style={{ height: h }}
+        />
+      ))}
+    </div>
+  );
+}
 import { Navbar } from "@/components/gbnz/Navbar";
 import { Footer } from "@/components/gbnz/Footer";
 import { ProjectCard } from "@/components/gbnz/ProjectCard";
 import { ProjectModal } from "@/components/gbnz/ProjectModal";
-import { cats, allProjects, type Cat, type ProjectItem } from "@/data/portfolioData";
+import { cats, type Cat, type ProjectItem } from "@/data/portfolioData";
+import { usePortfolioProjects } from "@/hooks/usePortfolio";
 
 export function PortfolioPage() {
   const [active, setActive] = useState<Cat>("Tout");
   const [selectedProject, setSelectedProject] = useState<ProjectItem | null>(null);
 
+  const { projects, isLoading } = usePortfolioProjects();
+
   // Filtrage complet de tous les projets
-  const filteredProjects = allProjects.filter(
+  const filteredProjects = projects.filter(
     (p) => active === "Tout" || p.cat === active
   );
 
   const getCategoryCount = (c: Cat) => {
-    if (c === "Tout") return allProjects.length;
-    return allProjects.filter((p) => p.cat === c).length;
+    if (c === "Tout") return projects.length;
+    return projects.filter((p) => p.cat === c).length;
   };
 
   return (
@@ -75,7 +93,7 @@ export function PortfolioPage() {
             >
               <div>
                 <span className="font-display text-2xl sm:text-4xl text-brand-black block leading-none">
-                  {allProjects.length}
+                  {projects.length}
                 </span>
                 <span className="text-[10px] sm:text-xs uppercase font-bold text-brand-gray tracking-wider">
                   Projets répertoriés
@@ -134,17 +152,27 @@ export function PortfolioPage() {
         </div>
 
         {/* MASONRY GRID COMPLÈTE */}
-        <div className="columns-1 sm:columns-2 lg:columns-3 gap-5 sm:gap-6 md:gap-8 space-y-5 sm:space-y-6 md:space-y-8">
-          <AnimatePresence mode="popLayout">
-            {filteredProjects.map((p) => (
-              <ProjectCard
-                key={p.id}
-                project={p}
-                onSelect={(proj) => setSelectedProject(proj)}
-              />
-            ))}
-          </AnimatePresence>
-        </div>
+        {isLoading ? (
+          <PortfolioPageSkeleton />
+        ) : filteredProjects.length > 0 ? (
+          <div className="columns-1 sm:columns-2 lg:columns-3 gap-5 sm:gap-6 md:gap-8 space-y-5 sm:space-y-6 md:space-y-8">
+            <AnimatePresence mode="popLayout">
+              {filteredProjects.map((p) => (
+                <ProjectCard
+                  key={p.id}
+                  project={p}
+                  onSelect={(proj) => setSelectedProject(proj)}
+                />
+              ))}
+            </AnimatePresence>
+          </div>
+        ) : (
+          <div className="py-20 text-center">
+            <p className="text-brand-gray font-body text-base sm:text-lg">
+              Aucun projet répertorié pour le moment dans cette catégorie.
+            </p>
+          </div>
+        )}
 
         {/* BANNIÈRE D'APPEL À L'ACTION */}
         <motion.div

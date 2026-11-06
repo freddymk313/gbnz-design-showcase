@@ -21,7 +21,7 @@ export function ProjectCard({ project, onSelect }: ProjectCardProps) {
       {project.image && (
         <img
           src={project.image}
-          alt={project.title}
+          alt={project.altText || project.title}
           loading="lazy"
           className="w-full h-auto group-hover:scale-105 transition-transform duration-700 ease-out"
         />

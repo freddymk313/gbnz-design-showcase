@@ -1,24 +1,17 @@
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { 
-  Check, 
-  ArrowRight, 
-  Sparkles, 
-  Clock, 
-  Wallet, 
-  MessageCircle, 
-  Frame, 
+import {
+  Check,
+  ArrowRight,
+  Frame,
   PenTool,
-  PartyPopper,
-  Flame,
-  Church,
-  Calendar,
-  Briefcase,
-  Building2,
-  Building,
-  UserCheck
+  LucideProps,
 } from "lucide-react";
+import * as LucideIcons from "lucide-react";
+import { usePricingItems } from "@/hooks/usePortfolio";
+import type { SanityPricingItem } from "@/types/sanity";
 
+// ---- Types internes ----
 export interface PricingItem {
   id: string;
   category: "affiches" | "logos";
@@ -28,12 +21,13 @@ export interface PricingItem {
   numericPrice: number;
   badge?: string;
   highlight?: boolean;
-  icon: React.ElementType;
+  icon: string;
   features: string[];
   whatsappMessage: string;
 }
 
-export const affichesPricing: PricingItem[] = [
+// ---- Fallback statique (utilisé si Sanity n'a pas encore de tarifs publiés) ----
+export const staticAffichesPricing: PricingItem[] = [
   {
     id: "culte",
     category: "affiches",
@@ -43,7 +37,7 @@ export const affichesPricing: PricingItem[] = [
     numericPrice: 25000,
     badge: "Recommandé",
     highlight: true,
-    icon: Church,
+    icon: "Church",
     features: [
       "Design professionnel et personnalisé",
       "Jusqu'à 3 personnes sur l'affiche",
@@ -54,7 +48,6 @@ export const affichesPricing: PricingItem[] = [
     whatsappMessage:
       "Bonjour Gbnz Design, je souhaite commander une *Affiche Culte* à *25.000 FC*. Si l'affiche contient plus de 3 personnes, le tarif est de *35.000 FC*.",
   },
-
   {
     id: "anniversaire",
     category: "affiches",
@@ -62,7 +55,7 @@ export const affichesPricing: PricingItem[] = [
     subtitle: "Pour célébrer vos anniversaires et moments spéciaux",
     price: "45.000 FC",
     numericPrice: 45000,
-    icon: PartyPopper,
+    icon: "PartyPopper",
     features: [
       "Design personnalisé selon votre thème",
       "Mise en valeur de la photo principale",
@@ -73,7 +66,6 @@ export const affichesPricing: PricingItem[] = [
     whatsappMessage:
       "Bonjour Gbnz Design, je souhaite commander une *Affiche Anniversaire* à *45.000 FC*.",
   },
-
   {
     id: "manif-celebration",
     category: "affiches",
@@ -81,7 +73,7 @@ export const affichesPricing: PricingItem[] = [
     subtitle: "Manifestations, célébrations et événements spéciaux",
     price: "50.000 FC",
     numericPrice: 50000,
-    icon: PartyPopper,
+    icon: "PartyPopper",
     features: [
       "Design professionnel et accrocheur",
       "Mise en valeur des participants et informations",
@@ -92,7 +84,6 @@ export const affichesPricing: PricingItem[] = [
     whatsappMessage:
       "Bonjour Gbnz Design, je souhaite commander une *Affiche Manif & Célébration* à *50.000 FC*.",
   },
-
   {
     id: "affiche-publicitaire",
     category: "affiches",
@@ -100,7 +91,7 @@ export const affichesPricing: PricingItem[] = [
     subtitle: "Pour promouvoir vos produits, services ou activités",
     price: "50.000 FC",
     numericPrice: 50000,
-    icon: Briefcase,
+    icon: "Briefcase",
     features: [
       "Design publicitaire professionnel",
       "Mise en avant de vos produits ou services",
@@ -113,7 +104,7 @@ export const affichesPricing: PricingItem[] = [
   },
 ];
 
-export const logosPricing: PricingItem[] = [
+export const staticLogosPricing: PricingItem[] = [
   {
     id: "logo-eglise",
     category: "logos",
@@ -121,7 +112,7 @@ export const logosPricing: PricingItem[] = [
     subtitle: "Identité visuelle pour églises, ministères et communautés",
     price: "45.000 FC",
     numericPrice: 45000,
-    icon: Church,
+    icon: "Church",
     features: [
       "Création d'un logo professionnel et personnalisé",
       "Symbole adapté à l'identité de votre église",
@@ -132,7 +123,6 @@ export const logosPricing: PricingItem[] = [
     whatsappMessage:
       "Bonjour Gbnz Design, je souhaite commander un *Logo Église* à *45.000 FC*.",
   },
-
   {
     id: "logo-entreprise",
     category: "logos",
@@ -142,7 +132,7 @@ export const logosPricing: PricingItem[] = [
     numericPrice: 55000,
     badge: "Best Seller",
     highlight: true,
-    icon: Building2,
+    icon: "Building2",
     features: [
       "Logo professionnel et personnalisé",
       "Création adaptée à votre activité",
@@ -153,7 +143,6 @@ export const logosPricing: PricingItem[] = [
     whatsappMessage:
       "Bonjour Gbnz Design, je souhaite commander un *Logo Entreprise* à *55.000 FC*.",
   },
-
   {
     id: "logo-personnel",
     category: "logos",
@@ -161,7 +150,7 @@ export const logosPricing: PricingItem[] = [
     subtitle: "Pour particuliers, artistes, créateurs et personal branding",
     price: "65.000 FC",
     numericPrice: 65000,
-    icon: UserCheck,
+    icon: "UserCheck",
     features: [
       "Logo personnalisé et unique",
       "Design adapté à votre personnalité",
@@ -174,14 +163,77 @@ export const logosPricing: PricingItem[] = [
   },
 ];
 
+/** Résout dynamiquement une icône Lucide depuis son nom (string Sanity) */
+function DynamicIcon({ name, ...props }: { name: string } & LucideProps) {
+  const Icon = (LucideIcons as unknown as Record<string, React.ComponentType<LucideProps>>)[name];
+  if (!Icon) return <Frame {...props} />;
+  return <Icon {...props} />;
+}
+
+/** Mappe un document SanityPricingItem vers l'interface interne PricingItem */
+function mapSanityPricing(item: SanityPricingItem): PricingItem {
+  return {
+    id: item._id,
+    category: item.category,
+    name: item.name,
+    subtitle: item.subtitle,
+    price: item.price,
+    numericPrice: item.numericPrice,
+    badge: item.badge,
+    highlight: item.highlight,
+    icon: item.icon,
+    features: item.features,
+    whatsappMessage: item.whatsappMessage,
+  };
+}
+
+/** Skeleton de chargement */
+function PricingSkeleton() {
+  return (
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
+      {[0, 1, 2].map((i) => (
+        <div
+          key={i}
+          className="p-6 sm:p-7 md:p-9 rounded-2xl sm:rounded-3xl md:rounded-[32px] bg-white border border-black/5 h-80 animate-pulse"
+        >
+          <div className="h-6 bg-black/5 rounded-full w-2/3 mb-3" />
+          <div className="h-3 bg-black/5 rounded-full w-full mb-6" />
+          <div className="h-10 bg-black/5 rounded-full w-1/2 mb-6" />
+          <div className="space-y-2">
+            {[0, 1, 2].map((j) => (
+              <div key={j} className="h-3 bg-black/5 rounded-full w-full" />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 type FilterType = "all" | "affiches" | "logos";
 
 export function Tarifs() {
   const [filter, setFilter] = useState<FilterType>("all");
+  const { data: sanityPricingItems = [], isLoading } = usePricingItems();
 
   const openWhatsApp = (msg: string) => {
     const encoded = encodeURIComponent(msg);
     window.open(`https://wa.me/243976925615?text=${encoded}`, "_blank");
+  };
+
+  // Données Sanity ou fallback statique
+  const allPricing: PricingItem[] =
+    sanityPricingItems.length > 0
+      ? sanityPricingItems.map(mapSanityPricing)
+      : [...staticAffichesPricing, ...staticLogosPricing];
+
+  const affichesPricing = allPricing.filter((p) => p.category === "affiches");
+  const logosPricing = allPricing.filter((p) => p.category === "logos");
+
+  const tabCounts = {
+    all: allPricing.length,
+    affiches: affichesPricing.length,
+    logos: logosPricing.length,
   };
 
   return (
@@ -191,7 +243,7 @@ export function Tarifs() {
       <div className="absolute bottom-20 left-10 w-96 h-96 bg-black/5 rounded-full blur-[100px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
-        
+
         {/* SECTION HEADER */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
@@ -200,7 +252,6 @@ export function Tarifs() {
           transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
           className="text-center mb-8 sm:mb-12 md:mb-16"
         >
-         
           <h2 className="font-display text-4xl sm:text-6xl md:text-8xl text-brand-black leading-none uppercase tracking-tighter">
             Nos <span className="text-brand-yellow">Tarifs</span>
           </h2>
@@ -218,115 +269,118 @@ export function Tarifs() {
           transition={{ duration: 0.6, delay: 0.1 }}
           className="flex flex-wrap items-center justify-center gap-2 sm:gap-3 mb-10 sm:mb-14 md:mb-20"
         >
-          {[
-            { id: "all", label: "Toutes les formules", count: "8" },
-            { id: "affiches", label: "Affiches", count: "5" },
-            { id: "logos", label: "Logos", count: "3" },
-          ].map((tab) => {
-            const isActive = filter === tab.id;
+          {(["all", "affiches", "logos"] as FilterType[]).map((id) => {
+            const labels: Record<FilterType, string> = {
+              all: "Toutes les formules",
+              affiches: "Affiches",
+              logos: "Logos",
+            };
+            const isActive = filter === id;
             return (
               <button
-                key={tab.id}
-                onClick={() => setFilter(tab.id as FilterType)}
+                key={id}
+                onClick={() => setFilter(id)}
                 className={`relative px-4 py-2 sm:px-6 sm:py-3 rounded-full text-[11px] sm:text-xs font-bold uppercase tracking-wider transition-all duration-300 flex items-center gap-2 cursor-pointer ${
                   isActive
                     ? "bg-brand-black text-white shadow-lg shadow-black/10 scale-105"
                     : "bg-white text-brand-black border border-black/5 hover:border-black/20 hover:bg-neutral-50"
                 }`}
               >
-                <span>{tab.label}</span>
+                <span>{labels[id]}</span>
                 <span
                   className={`text-[9px] sm:text-[10px] px-1.5 sm:px-2 py-0.5 rounded-full ${
-                    isActive
-                      ? "bg-brand-yellow text-brand-black"
-                      : "bg-neutral-100 text-brand-gray"
+                    isActive ? "bg-brand-yellow text-brand-black" : "bg-neutral-100 text-brand-gray"
                   }`}
                 >
-                  {tab.count}
+                  {tabCounts[id]}
                 </span>
               </button>
             );
           })}
         </motion.div>
 
-        {/* GROUP 1: AFFICHES */}
-        {(filter === "all" || filter === "affiches") && (
-          <div className="mb-12 sm:mb-16 md:mb-24">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 mb-6 sm:mb-10 pb-3 sm:pb-4 border-b border-black/10"
-            >
-              <div>
-                <div className="flex items-center gap-2 text-brand-yellow mb-1.5 sm:mb-2">
-                  <Frame size={18} className="sm:w-5 sm:h-5" />
-                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-brand-black/60">
-                    Catégorie 01
-                  </span>
+        {isLoading ? (
+          <PricingSkeleton />
+        ) : (
+          <>
+            {/* GROUP 1: AFFICHES */}
+            {(filter === "all" || filter === "affiches") && affichesPricing.length > 0 && (
+              <div className="mb-12 sm:mb-16 md:mb-24">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 mb-6 sm:mb-10 pb-3 sm:pb-4 border-b border-black/10"
+                >
+                  <div>
+                    <div className="flex items-center gap-2 text-brand-yellow mb-1.5 sm:mb-2">
+                      <Frame size={18} className="sm:w-5 sm:h-5" />
+                      <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-brand-black/60">
+                        Catégorie 01
+                      </span>
+                    </div>
+                    <h3 className="font-display text-2xl sm:text-3xl md:text-5xl uppercase tracking-tight text-brand-black">
+                      Affiches & Posters
+                    </h3>
+                  </div>
+                  <p className="text-brand-gray text-xs sm:text-sm md:text-base font-body max-w-md">
+                    Designs captivants pour cultes, événements grand public, anniversaires et campagnes commerciales.
+                  </p>
+                </motion.div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
+                  {affichesPricing.map((item, index) => (
+                    <PricingCard
+                      key={item.id}
+                      item={item}
+                      index={index}
+                      onSelect={() => openWhatsApp(item.whatsappMessage)}
+                    />
+                  ))}
                 </div>
-                <h3 className="font-display text-2xl sm:text-3xl md:text-5xl uppercase tracking-tight text-brand-black">
-                  Affiches & Posters
-                </h3>
               </div>
-              <p className="text-brand-gray text-xs sm:text-sm md:text-base font-body max-w-md">
-                Designs captivants pour cultes, événements grand public, anniversaires et campagnes commerciales.
-              </p>
-            </motion.div>
+            )}
 
-            {/* Affiches Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
-              {affichesPricing.map((item, index) => (
-                <PricingCard
-                  key={item.id}
-                  item={item}
-                  index={index}
-                  onSelect={() => openWhatsApp(item.whatsappMessage)}
-                />
-              ))}
-            </div>
-          </div>
-        )}
+            {/* GROUP 2: LOGOS */}
+            {(filter === "all" || filter === "logos") && logosPricing.length > 0 && (
+              <div className="mb-10 sm:mb-14 md:mb-20">
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  whileInView={{ opacity: 1, x: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.6 }}
+                  className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 mb-6 sm:mb-10 pb-3 sm:pb-4 border-b border-black/10"
+                >
+                  <div>
+                    <div className="flex items-center gap-2 text-brand-yellow mb-1.5 sm:mb-2">
+                      <PenTool size={18} className="sm:w-5 sm:h-5" />
+                      <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-brand-black/60">
+                        Catégorie 02
+                      </span>
+                    </div>
+                    <h3 className="font-display text-2xl sm:text-3xl md:text-5xl uppercase tracking-tight text-brand-black">
+                      Logos & Identités Visuelles
+                    </h3>
+                  </div>
+                  <p className="text-brand-gray text-xs sm:text-sm md:text-base font-body max-w-md">
+                    Identités graphiques solides et sur-mesure pour asseoir la réputation de votre église, entreprise ou marque personnelle.
+                  </p>
+                </motion.div>
 
-        {/* GROUP 2: LOGOS */}
-        {(filter === "all" || filter === "logos") && (
-          <div className="mb-10 sm:mb-14 md:mb-20">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              whileInView={{ opacity: 1, x: 0 }}
-              viewport={{ once: true }}
-              transition={{ duration: 0.6 }}
-              className="flex flex-col sm:flex-row sm:items-end justify-between gap-3 sm:gap-4 mb-6 sm:mb-10 pb-3 sm:pb-4 border-b border-black/10"
-            >
-              <div>
-                <div className="flex items-center gap-2 text-brand-yellow mb-1.5 sm:mb-2">
-                  <PenTool size={18} className="sm:w-5 sm:h-5" />
-                  <span className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-brand-black/60">
-                    Catégorie 02
-                  </span>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
+                  {logosPricing.map((item, index) => (
+                    <PricingCard
+                      key={item.id}
+                      item={item}
+                      index={index}
+                      onSelect={() => openWhatsApp(item.whatsappMessage)}
+                    />
+                  ))}
                 </div>
-                <h3 className="font-display text-2xl sm:text-3xl md:text-5xl uppercase tracking-tight text-brand-black">
-                  Logos & Identités Visuelles
-                </h3>
               </div>
-              <p className="text-brand-gray text-xs sm:text-sm md:text-base font-body max-w-md">
-                Identités graphiques solides et sur-mesure pour asseoir la réputation de votre église, entreprise ou marque personnelle.
-              </p>
-            </motion.div>
-
-            {/* Logos Grid */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
-              {logosPricing.map((item, index) => (
-                <PricingCard
-                  key={item.id}
-                  item={item}
-                  index={index}
-                  onSelect={() => openWhatsApp(item.whatsappMessage)}
-                />
-              ))}
-            </div>
-          </div>
+            )}
+          </>
         )}
       </div>
     </section>
@@ -340,7 +394,6 @@ interface PricingCardProps {
 }
 
 function PricingCard({ item, index, onSelect }: PricingCardProps) {
-  const Icon = item.icon;
   const isDark = Boolean(item.highlight);
 
   return (
@@ -376,7 +429,7 @@ function PricingCard({ item, index, onSelect }: PricingCardProps) {
               isDark ? "bg-white/10 text-brand-yellow" : "bg-[#F9F9F9] text-brand-black"
             }`}
           >
-            <Icon size={18} className="sm:w-5 sm:h-5" />
+            <DynamicIcon name={item.icon} size={18} className="sm:w-5 sm:h-5" />
           </div>
         </div>
       )}
@@ -420,17 +473,13 @@ function PricingCard({ item, index, onSelect }: PricingCardProps) {
             <div key={i} className="flex items-start gap-2.5 sm:gap-3 text-xs sm:text-sm">
               <div
                 className={`mt-0.5 w-3.5 h-3.5 sm:w-4 sm:h-4 rounded-full flex items-center justify-center flex-shrink-0 ${
-                  isDark
-                    ? "bg-brand-yellow text-brand-black"
-                    : "bg-black/5 text-brand-black"
+                  isDark ? "bg-brand-yellow text-brand-black" : "bg-black/5 text-brand-black"
                 }`}
               >
                 <Check size={10} strokeWidth={3} className="sm:w-3 sm:h-3" />
               </div>
               <span
-                className={`leading-snug font-body ${
-                  isDark ? "text-gray-200" : "text-brand-black/80"
-                }`}
+                className={`leading-snug font-body ${isDark ? "text-gray-200" : "text-brand-black/80"}`}
               >
                 {feature}
               </span>

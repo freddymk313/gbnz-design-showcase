@@ -4,6 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { Mail, Phone, MapPin, Check, Instagram, Facebook, ArrowRight } from "lucide-react";
+import { useSiteSettings } from "@/hooks/usePortfolio";
 
 const schema = z.object({
   prenom: z.string().trim().min(2, "Prénom requis"),
@@ -19,6 +20,11 @@ type FormData = z.infer<typeof schema>;
 
 export function Contact() {
   const [sent, setSent] = useState(false);
+  const { data: settings } = useSiteSettings();
+  const whatsappNumber = settings?.whatsappNumber || "243976925615";
+  const contactEmail = settings?.email || "kabowddoxa4@gmail.com";
+  const contactLocation = settings?.location || "Lubumbashi, RDC";
+
   const { register, handleSubmit, formState: { errors }, reset } = useForm<FormData>({
     resolver: zodResolver(schema),
   });
@@ -35,8 +41,8 @@ export function Contact() {
       `*Date souhaitée :* ${data.date}%0A%0A` +
       `*Description :*%0A${encodeURIComponent(data.description)}`;
 
-    // 2. Créer l'URL WhatsApp avec le numéro de Gloire
-    const whatsappUrl = `https://wa.me/243976925615?text=${message}`;
+    // 2. Créer l'URL WhatsApp avec le numéro configuré dans Sanity
+    const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${message}`;
 
     // 3. Ouvrir l'URL dans un nouvel onglet
     window.open(whatsappUrl, '_blank');
@@ -79,23 +85,23 @@ export function Contact() {
 
             {/* Contact Info Rows */}
             <div className="mt-8 sm:mt-10 md:mt-12 space-y-4 sm:space-y-6 border-l border-white/10 pl-4 sm:pl-6">
-              <a href="mailto:kabowddoxa4@gmail.com" className="group flex items-center gap-3.5 text-white/80 hover:text-brand-yellow transition-colors font-body text-sm sm:text-base break-all">
+              <a href={`mailto:${contactEmail}`} className="group flex items-center gap-3.5 text-white/80 hover:text-brand-yellow transition-colors font-body text-sm sm:text-base break-all">
                 <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0 group-hover:bg-brand-yellow group-hover:text-brand-black transition-colors">
                   <Mail size={16} className="sm:w-4 sm:h-4" />
                 </div>
-                kabowddoxa4@gmail.com
+                {contactEmail}
               </a>
-              <a href="tel:+243976925615" className="group flex items-center gap-3.5 text-white/80 hover:text-brand-yellow transition-colors font-body text-sm sm:text-base">
+              <a href={`tel:+${whatsappNumber}`} className="group flex items-center gap-3.5 text-white/80 hover:text-brand-yellow transition-colors font-body text-sm sm:text-base">
                 <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0 group-hover:bg-brand-yellow group-hover:text-brand-black transition-colors">
                   <Phone size={16} className="sm:w-4 sm:h-4" />
                 </div>
-                +243 976 925 615 <span className="text-[11px] sm:text-xs text-white/40">(Gloire Banza)</span>
+                +{whatsappNumber} <span className="text-[11px] sm:text-xs text-white/40">(Gloire Banza)</span>
               </a>
               <div className="flex items-center gap-3.5 text-white/60 font-body text-sm sm:text-base">
                 <div className="w-9 h-9 sm:w-10 sm:h-10 rounded-xl bg-white/5 flex items-center justify-center flex-shrink-0 text-brand-yellow">
                   <MapPin size={16} className="sm:w-4 sm:h-4" />
                 </div>
-                Lubumbashi, RDC
+                {contactLocation}
               </div>
             </div>
           </div>

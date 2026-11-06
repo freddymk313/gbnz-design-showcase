@@ -1,5 +1,8 @@
-export type Cat = "Tout" | "Logos" | "Affiches";
-export const cats: Cat[] = ["Tout", "Logos", "Affiches" ];
+import type { SanityPoster } from "@/types/sanity";
+import { getPosterCardUrl, getFullPosterUrl, getPosterDownloadUrl } from "@/lib/sanity/image";
+
+export type Cat = "Tout" | "Logos" | "Affiches" | "Identité Visuelle";
+export const cats: Cat[] = ["Tout", "Logos", "Affiches", "Identité Visuelle"];
 
 // Importation dynamique ordonnée des images
 const imagesGlob = import.meta.glob('@/assets/portfolio/*.jpg', { eager: true, import: 'default' });
@@ -13,13 +16,18 @@ export const sortedImages = Object.entries(imagesGlob)
   .map(([_, url]) => url as string);
 
 export interface ProjectItem {
-  id: number;
+  id: number | string;
   title: string;
   label: string;
   cat: "Logos" | "Affiches" | "Identité Visuelle";
   bg: string;
   showLogo?: boolean;
   image: string;
+  fullImage?: string;
+  altText?: string;
+  downloadUrl?: string;
+  isSanity?: boolean;
+  publishedAt?: string;
 }
 
 const projectMetadata: Array<{
@@ -48,15 +56,40 @@ const projectMetadata: Array<{
   { title: "Boutique Lualaba Luxe", label: "Identité & Packaging Prêt-à-Porter", cat: "Identité Visuelle", bg: "bg-neutral-200" },
 ];
 
-export const allProjects: ProjectItem[] = sortedImages.map((imageUrl, index) => {
-  const meta = projectMetadata[index % projectMetadata.length];
+// 100% Dynamique Sanity : Plus aucune donnée statique de test
+export const allProjects: ProjectItem[] = [];
+
+/**
+ * Maps a published Sanity poster document to the application's ProjectItem interface.
+ */
+export function mapSanityPosterToProjectItem(poster: SanityPoster): ProjectItem {
   return {
-    id: index + 1,
-    title: meta.title,
-    label: meta.label,
-    cat: meta.cat,
-    bg: meta.bg,
+    id: poster._id,
+    title: poster.title,
+    label: poster.description || "Création GBNZ Design",
+    cat: poster.category || "Affiches",
+    bg: "bg-brand-black",
     showLogo: false,
-    image: imageUrl,
+    image: getPosterCardUrl(poster.image),
+    fullImage: getFullPosterUrl(poster.image),
+    downloadUrl: getPosterDownloadUrl(poster.image, poster.title),
+    altText: poster.altText || poster.title,
+    isSanity: true,
+    publishedAt: poster.publishedAt,
   };
-});
+}
+
+/**
+ * Returns dynamic projects exclusively from Sanity CMS.
+ * No static fallbacks are displayed.
+ */
+export function buildCombinedProjects(
+  sanityPosters: SanityPoster[] = []
+): ProjectItem[] {
+  if (!sanityPosters || sanityPosters.length === 0) {
+    return [];
+  }
+
+  return sanityPosters.map(mapSanityPosterToProjectItem);
+}
+
